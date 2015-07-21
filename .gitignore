@@ -1,0 +1,15 @@
+Sky Creatures_Unity/[Ll]ibrary/
+Sky Creatures_Unity/[Tt]emp/
+Sky Creatures_Unity/[Oo]bj/
+Sky Creatures_Unity/[Bb]uild/
+Sky Creatures_Unity/*.csproj
+Sky Creatures_Unity/*.unityproj
+Sky Creatures_Unity/*.sln
+Sky Creatures_Unity/*.suo
+Sky Creatures_Unity/*.tmp
+Sky Creatures_Unity/*.user
+Sky Creatures_Unity/*.userprefs
+Sky Creatures_Unity/*.pidb
+Sky Creatures_Unity/*.booproj
+Sky Creatures_Unity/*.pidb.meta
+Sky Creatures_Unity/sysinfo.txt
