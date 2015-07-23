@@ -23,8 +23,14 @@ public class MainScript : MonoBehaviour {
 	float progressVanish = 0f;
 	bool vanishing = false;
 	int indexToVanish = 0;
-	public float durationVanish = 0.3f;
+	public float durationVanishIn = 0.3f;
+	public float durationVanishOut = 0.1f;
 
+	bool motionLayerForward = false;
+
+	public float marginLayers = 100f;
+
+	//public float horizontalSpeed = 0f;
 
 	void Start () 
 	{
@@ -37,6 +43,28 @@ public class MainScript : MonoBehaviour {
 		KeyboardInputs();
 
 		Reorganizing();
+
+		UpdateValues();
+
+
+	}
+
+	void UpdateValues()
+	{
+		float horizontalSpeed = (value4-value3)*0.01f;
+		listLayers[frontIndex].SetHorizontalSpeed(horizontalSpeed);
+
+
+		float sensDistort = (value6-value5)*0.01f;
+		listLayers[frontIndex].SetValueDistort(sensDistort);
+
+
+
+
+
+
+
+
 
 	}
 
@@ -80,18 +108,16 @@ public class MainScript : MonoBehaviour {
 		{
 
 
-
-
-
 			if(moveForward)
 			{
-				frontIndex = (int)Modulo ((float)(frontIndex-1),(float)listLayers.Length);
+				motionLayerForward = true;
+				//frontIndex = (int)Modulo ((float)(frontIndex-1),(float)listLayers.Length);
 				indexToVanish = frontIndex;
 			}
 			else
 			{
-				frontIndex = (int)Modulo ((float)(frontIndex+1),(float)listLayers.Length);
-
+				//frontIndex = (int)Modulo ((float)(frontIndex+1),(float)listLayers.Length);
+				motionLayerForward = false;
 				indexToVanish = (int)Modulo ((float)(frontIndex+3),(float)listLayers.Length);
 			}
 
@@ -108,13 +134,45 @@ public class MainScript : MonoBehaviour {
 		{
 			if(vanishing)
 			{
-				progressVanish=Mathf.Clamp01(progressVanish+Time.deltaTime/durationVanish);
+				progressVanish=Mathf.Clamp01(progressVanish+Time.deltaTime/durationVanishIn);
 
 				listLayers[indexToVanish].Vanish(progressVanish);
 
 
+
+				for(int i = 0; i<listLayers.Length;i++)
+				{
+					int _i = (int)Modulo((float)(frontIndex+i),(float)listLayers.Length);
+					
+					
+					listLayers[_i].gameObject.transform.position = Vector3.forward*Map ((float)i,0f,(float)(listLayers.Length-1),0f,marginLayers*(float)(listLayers.Length-1))+Vector3.forward*marginLayers*(motionLayerForward?-1f:1f)*progressVanish;
+					//listLayers[_i].gameObject.transform.localScale = new Vector3(1f,1f,1f)*Map ((float)i+progressGlobal,(float)0f,(float)(listLayers.Length),11.82f,67.64f);
+				}
+
+
+
+
+
 				if(progressVanish==1f)
 				{
+
+				
+					if(motionLayerForward)
+					{
+						//motionLayerForward = true;
+						frontIndex = (int)Modulo ((float)(frontIndex+1),(float)listLayers.Length);
+						//indexToVanish = frontIndex;
+					}
+					else
+					{
+						frontIndex = (int)Modulo ((float)(frontIndex-1),(float)listLayers.Length);
+						//motionLayerForward = false;
+						//indexToVanish = (int)Modulo ((float)(frontIndex+3),(float)listLayers.Length);
+					}
+
+
+
+
 					PlaceLayers(frontIndex);
 					vanishing = false;
 				}
@@ -122,7 +180,7 @@ public class MainScript : MonoBehaviour {
 			}
 			else
 			{
-				progressVanish=Mathf.Clamp01(progressVanish-Time.deltaTime/durationVanish);
+				progressVanish=Mathf.Clamp01(progressVanish-Time.deltaTime/durationVanishOut);
 
 				listLayers[indexToVanish].Vanish(progressVanish);
 				if(progressVanish==0f)
@@ -131,7 +189,27 @@ public class MainScript : MonoBehaviour {
 				}
 			}
 
+
+
+			
+			
+			
+			
+			
+			
+
+
+
+
+
 		}
+
+
+
+
+
+
+
 	}
 
 
@@ -142,7 +220,8 @@ public class MainScript : MonoBehaviour {
 		{
 			int _i = (int)Modulo((float)(_frontIndex+i),(float)listLayers.Length);
 
-			listLayers[_i].gameObject.transform.position = Vector3.forward*(float)i;
+			listLayers[_i].gameObject.transform.position = Vector3.forward*Map ((float)i,0f,(float)(listLayers.Length-1),0f,marginLayers*(float)(listLayers.Length-1));
+			//listLayers[_i].gameObject.transform.localScale = new Vector3(1f,1f,1f)*Map ((float)i,(float)0f,(float)(listLayers.Length-1),11.82f,67.64f);
 		}
 	}
 
@@ -162,11 +241,41 @@ public class MainScript : MonoBehaviour {
 
 	public void Slider1(float value){	value1 = value;	}
 	public void Slider2(float value){	value2 = value;	}
-	public void Slider3(float value){	value3= value;	}
+	public void Slider3(float value){	value3 = value;	}
 	public void Slider4(float value){	value4 = value;	}
 	public void Slider5(float value){	value5 = value;	}
 	public void Slider6(float value){	value6 = value;	}
 	public void Slider7(float value){	value7 = value;	}
 	public void Slider8(float value){	value8 = value;	}
 
+	public void GoNextLayer()
+	{
+		LaunchReorganisation(true);
+	}
+
+	public void TryCatchCreature()
+	{
+
+	}
+
+	public float GetDistanceInLoop(Vector2 pointA, Vector2 pointB)
+	{
+		float distanceMin = 999f;
+
+		for(float i = -1f;i<2f;i++)
+		{
+			for(float j = -1f;j<2f;i++)
+			{
+				float newDistance = Vector2.Distance(new Vector2(pointA.x+j,pointA.y+i),pointB);
+
+				if(newDistance<distanceMin)
+				{
+					distanceMin = newDistance;
+				}
+			}
+		}
+
+		return(distanceMin);
+
+	}
 }
