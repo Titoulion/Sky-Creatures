@@ -19,21 +19,22 @@ public class ArduinoInput : SingletonMonoBehaviour<ArduinoInput>
     [SerializeField] private int readTimeout = 10;
     [SerializeField] private int writeTimeout = 10;
     [SerializeField] private int valuesCount = 2;
-    [SerializeField] private int[] closestValuesWithoutTouching;
+    [SerializeField] private int[] closestValuesWithoutTouchingByPin;
+    [SerializeField] private int[] indexToPinNumber;
     [SerializeField] private bool saveDebugText;
 
-    public bool[] Touch { get; private set; }
-    public int[] Diff { get; private set; }
-    public float[] ClosenessDistance { get; private set; }
-    public bool DebugTextUpdated { get; private set; }
-
+    private bool[] touchByPin;
+    private int[] diffByPin;
+    private float[] closenessDistanceByPin;
     private string debugTextString;
+
+    public bool IsDebugTextUpdated { get; private set; }
 
     private string debugTextStringInternal;
     private bool updatedInternal;
-    private bool[] touchInternal;
-    private int[] diffInternal;
-    private float[] closenessDistanceInternal;
+    private bool[] touchByPinInternal;
+    private int[] diffByPinInternal;
+    private float[] closenessDistanceByPinInternal;
 
 #if !UNITY_WEBPLAYER
     private SerialPort stream;
@@ -51,13 +52,13 @@ public class ArduinoInput : SingletonMonoBehaviour<ArduinoInput>
         stream.WriteTimeout = writeTimeout;
         thread = new Thread(ReadDataThread);
 
-        Touch = new bool[valuesCount];
-        Diff = new int[valuesCount];
-        ClosenessDistance = new float[valuesCount];
+        touchByPin = new bool[valuesCount];
+        diffByPin = new int[valuesCount];
+        closenessDistanceByPin = new float[valuesCount];
 
-        touchInternal = new bool[valuesCount];
-        diffInternal = new int[valuesCount];
-        closenessDistanceInternal = new float[valuesCount];
+        touchByPinInternal = new bool[valuesCount];
+        diffByPinInternal = new int[valuesCount];
+        closenessDistanceByPinInternal = new float[valuesCount];
     }
 
     private void OnEnable()
@@ -106,12 +107,12 @@ public class ArduinoInput : SingletonMonoBehaviour<ArduinoInput>
             lock (this)
             {
                 updatedInternal = false;
-                Array.Copy(touchInternal, Touch, valuesCount);
-                Array.Copy(diffInternal, Diff, valuesCount);
-                Array.Copy(closenessDistanceInternal, ClosenessDistance, valuesCount);
+                Array.Copy(touchByPinInternal, touchByPin, valuesCount);
+                Array.Copy(diffByPinInternal, diffByPin, valuesCount);
+                Array.Copy(closenessDistanceByPinInternal, closenessDistanceByPin, valuesCount);
 
                 debugTextString = debugTextStringInternal;
-                DebugTextUpdated = true;
+                IsDebugTextUpdated = true;
             }
         }
 /*
@@ -160,15 +161,15 @@ public class ArduinoInput : SingletonMonoBehaviour<ArduinoInput>
                     {
                         for (var i = 0; i < valuesCount; i++)
                         {
-                            touchInternal[i] = parts[i + 1].Equals("1");
+                            touchByPinInternal[i] = parts[i + 1].Equals("1");
                         }
                     }
                     else if (parts[0].Equals("DIFF:"))
                     {
                         for (var i = 0; i < valuesCount; i++)
                         {
-                            diffInternal[i] = int.Parse(parts[i + 1]);
-                            closenessDistanceInternal[i] = Mathf.InverseLerp(0, closestValuesWithoutTouching[i], Diff[i]);
+                            diffByPinInternal[i] = int.Parse(parts[i + 1]);
+                            closenessDistanceByPinInternal[i] = Mathf.InverseLerp(0, closestValuesWithoutTouchingByPin[i], diffByPin[i]);
                         }
                     }
                 }
@@ -193,7 +194,22 @@ public class ArduinoInput : SingletonMonoBehaviour<ArduinoInput>
 
     public string GetDebugTextUpdate()
     {
-        DebugTextUpdated = false;
+        IsDebugTextUpdated = false;
         return debugTextString;
+    }
+
+    public bool GetTouch(int index)
+    {
+        return touchByPin[indexToPinNumber[index]];
+    }
+
+    public int GetDiff(int index)
+    {
+        return diffByPin[indexToPinNumber[index]];
+    }
+
+    public float GetClosenessDistance(int index)
+    {
+        return closenessDistanceByPin[indexToPinNumber[index]];
     }
 }
