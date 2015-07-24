@@ -19,7 +19,7 @@ public class MainScript : MonoBehaviour {
 
 
 	public int frontIndex = 0;
-	bool reorganising = false;
+	public bool reorganising = false;
 	float progressVanish = 0f;
 	bool vanishing = false;
 	int indexToVanish = 0;
@@ -30,7 +30,22 @@ public class MainScript : MonoBehaviour {
 
 	public float marginLayers = 100f;
 
+	int indexCreatureLayer = 0;
+	public float distanceCreatureMax = 0.2f;
+
+	public CreatureScript currentCreature;
+	public float distanceMinToAppear = 0.1f;
+
+	public static MainScript Instance;
+
+	public bool catching = false;
+
 	//public float horizontalSpeed = 0f;
+
+	void Awake()
+	{
+		Instance = this;
+	}
 
 	void Start () 
 	{
@@ -44,12 +59,18 @@ public class MainScript : MonoBehaviour {
 
 		Reorganizing();
 
-		UpdateValues();
+
+		UpdateValuesDistance();
+	
+
+
+
+
 
 
 	}
 
-	void UpdateValues()
+	void UpdateValuesDistance()
 	{
 		float horizontalSpeed = (value4-value3)*0.01f;
 		listLayers[frontIndex].SetHorizontalSpeed(horizontalSpeed);
@@ -60,6 +81,42 @@ public class MainScript : MonoBehaviour {
 
 
 
+
+
+		for(int i = 0; i<listLayers.Length;i++)
+		{
+			if(i!=currentCreature.myLayer)
+			{
+				listLayers[i].SetValueFeedbackDistance(0f);
+			}
+			else
+			{
+
+				Vector2 pointB = new Vector2(Modulo(currentCreature.myCoordinate.x,1f),Modulo(currentCreature.myCoordinate.y,1f));
+				Vector2 pointA = new Vector2(listLayers[i].GetValueX(),listLayers[i].GetValueY());
+
+				float distance = GetMinDistanceInLoop(pointA,pointB);
+
+
+
+
+				float feedbackValue = (distance>distanceCreatureMax ?0f:1f-(distance/distanceCreatureMax ));
+
+				listLayers[i].SetValueFeedbackDistance(feedbackValue);
+
+				if(distance<=distanceMinToAppear)
+				{
+					currentCreature.Show();
+				}
+				else
+				{
+					currentCreature.Hide();
+				}
+
+
+			}
+
+		}
 
 
 
@@ -140,6 +197,9 @@ public class MainScript : MonoBehaviour {
 
 
 
+				if(currentCreature.myLayer == frontIndex)
+				currentCreature.SetAlpha(Mathf.Clamp01(1f-progressVanish*2f));
+
 				for(int i = 0; i<listLayers.Length;i++)
 				{
 					int _i = (int)Modulo((float)(frontIndex+i),(float)listLayers.Length);
@@ -180,7 +240,13 @@ public class MainScript : MonoBehaviour {
 			}
 			else
 			{
+
+
+
 				progressVanish=Mathf.Clamp01(progressVanish-Time.deltaTime/durationVanishOut);
+
+				if(currentCreature.myLayer == Modulo ((float)(frontIndex+listLayers.Length-1),listLayers.Length))
+				currentCreature.SetAlpha(Mathf.Clamp01(1f-progressVanish*2f));
 
 				listLayers[indexToVanish].Vanish(progressVanish);
 				if(progressVanish==0f)
@@ -239,32 +305,36 @@ public class MainScript : MonoBehaviour {
 		return a - b * Mathf.Floor(a / b);
 	}
 
-	public void Slider1(float value){	value1 = value;	}
-	public void Slider2(float value){	value2 = value;	}
-	public void Slider3(float value){	value3 = value;	}
-	public void Slider4(float value){	value4 = value;	}
-	public void Slider5(float value){	value5 = value;	}
-	public void Slider6(float value){	value6 = value;	}
-	public void Slider7(float value){	value7 = value;	}
-	public void Slider8(float value){	value8 = value;	}
+	public void Slider1(float value){	if(catching==false)value1 = value;	}
+	public void Slider2(float value){	if(catching==false)value2 = value;	}
+	public void Slider3(float value){	if(catching==false)value3 = value;	}
+	public void Slider4(float value){	if(catching==false)value4 = value;	}
+	public void Slider5(float value){	if(catching==false)value5 = value;	}
+	public void Slider6(float value){	if(catching==false)value6 = value;	}
+	public void Slider7(float value){	if(catching==false)value7 = value;	}
+	public void Slider8(float value){	if(catching==false)value8 = value;	}
 
 	public void GoNextLayer()
 	{
+		if(catching==false)
 		LaunchReorganisation(true);
 	}
 
 	public void TryCatchCreature()
 	{
-
+		if(reorganising==false && frontIndex == currentCreature.myLayer)
+		{
+			currentCreature.CatchMe();
+		}
 	}
 
-	public float GetDistanceInLoop(Vector2 pointA, Vector2 pointB)
+	public float GetMinDistanceInLoop(Vector2 pointA, Vector2 pointB)
 	{
 		float distanceMin = 999f;
 
 		for(float i = -1f;i<2f;i++)
 		{
-			for(float j = -1f;j<2f;i++)
+			for(float j = -1f;j<2f;j++)
 			{
 				float newDistance = Vector2.Distance(new Vector2(pointA.x+j,pointA.y+i),pointB);
 
@@ -277,5 +347,10 @@ public class MainScript : MonoBehaviour {
 
 		return(distanceMin);
 
+	}
+
+	public void EndCatch()
+	{
+		catching = false;
 	}
 }

@@ -9,14 +9,18 @@ public class CloudsLayerScript : MonoBehaviour {
 
 	public Vector2 minMaxCloud;
 	public AnimationCurve curveVanish;
+	float valueFeedbackDistance = 0f;
+	float currentValueFeedbackDistance = 0f;
 
 	void Start () {
 		myMat = GetComponent<Renderer>().material;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void Update () 
+	{
+		currentValueFeedbackDistance = Mathf.Lerp(currentValueFeedbackDistance,valueFeedbackDistance,0.1f);
+		myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
 	}
 
 	public void Vanish(float progress)
@@ -48,4 +52,30 @@ public class CloudsLayerScript : MonoBehaviour {
 		
 		
 	}
+
+
+	public float GetValueX()
+	{
+		return(Modulo (myMat.GetTextureOffset("_Perlin3").x,1f));
+	}
+
+	public float GetValueY()
+	{
+		return(Modulo (myMat.GetFloat("_ValueDistort"),Mathf.PI*2f)/(2f*Mathf.PI));
+	}
+
+	public void SetValueFeedbackDistance(float value)
+	{
+		valueFeedbackDistance = value;
+	}
+
+	float Modulo(float a,float b)
+	{
+		return a - b * Mathf.Floor(a / b);
+	}
+
+
+
+
+
 }
