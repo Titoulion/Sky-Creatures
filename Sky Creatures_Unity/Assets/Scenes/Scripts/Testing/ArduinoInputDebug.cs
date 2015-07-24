@@ -26,15 +26,15 @@ public class ArduinoInputDebug : MonoBehaviour
 
     private void Update()
     {
-        if (arduinoInput.DebugTextUpdated && (debugText != null))
+        if (arduinoInput.IsDebugTextUpdated && (debugText != null))
         {
             debugText.text = arduinoInput.GetDebugTextUpdate();
         }
 
         for (var i = 0; i < sliders.Length; i++)
         {
-            sliders[i].value = arduinoInput.ClosenessDistance[i];
-            sliders[i].fillRect.GetComponent<Image>().color = arduinoInput.Touch[i] ? colorTouched : colorUntouched;
+            sliders[i].value = arduinoInput.GetClosenessDistance(i);
+            sliders[i].fillRect.GetComponent<Image>().color = arduinoInput.GetTouch(i) ? colorTouched : colorUntouched;
         }
     }
 }
