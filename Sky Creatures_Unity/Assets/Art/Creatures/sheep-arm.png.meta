@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: aedcfb9051f6b714a8802878dbe55e7e
-timeCreated: 1437754520
+timeCreated: 1437762860
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -54,20 +54,20 @@ TextureImporter:
     - name: sheep-arm_0
       rect:
         serializedVersion: 2
-        x: 226
-        y: 5
-        width: 132
-        height: 113
+        x: 203
+        y: 0
+        width: 165
+        height: 158
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: sheep-arm_1
       rect:
         serializedVersion: 2
-        x: 447
+        x: 433
         y: 0
-        width: 128
-        height: 110
+        width: 165
+        height: 142
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -4,5 +4,6 @@
     Head,
     Feet,
     Tail,
-    Arms
+    ArmLeft,
+    ArmRight
 }

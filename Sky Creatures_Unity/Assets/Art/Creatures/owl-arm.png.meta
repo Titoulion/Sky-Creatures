@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: e806a56f0b44e454dbef4cf0087e76b2
-timeCreated: 1437754488
+timeCreated: 1437762848
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -54,20 +54,20 @@ TextureImporter:
     - name: owl-arm_0
       rect:
         serializedVersion: 2
-        x: 194
+        x: 188
         y: 46
-        width: 99
-        height: 285
+        width: 110
+        height: 296
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: owl-arm_1
       rect:
         serializedVersion: 2
-        x: 522
-        y: 72
-        width: 100
-        height: 254
+        x: 518
+        y: 79
+        width: 110
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
