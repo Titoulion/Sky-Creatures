@@ -40,6 +40,9 @@ public class MainScript : MonoBehaviour {
 
 	public bool catching = false;
 
+    ArduinoInput inputArduino;
+	bool previousStateTouchNextLayer = false;
+	bool previousStateTouchCatch = false;
 	//public float horizontalSpeed = 0f;
 
 	void Awake()
@@ -49,6 +52,10 @@ public class MainScript : MonoBehaviour {
 
 	void Start () 
 	{
+		//CreatureCreator.Instance.
+
+
+		//inputArduino = ArduinoInput.Instance;
 		PlaceLayers(frontIndex);
 	}
 	
@@ -57,15 +64,60 @@ public class MainScript : MonoBehaviour {
 	{
 		KeyboardInputs();
 
+		GetArduinoInputs();
+
+
+
 		Reorganizing();
 
 
 		UpdateValuesDistance();
+
+		if(Input.GetKeyDown(KeyCode.R))
+		{
+			Application.LoadLevel(0);
+		}
 	
 
 
 
 
+
+
+	}
+
+	void GetArduinoInputs()
+	{
+		if(inputArduino.GetTouch(5))
+		{
+			if(previousStateTouchNextLayer==false)
+			{
+				GoNextLayer();
+				previousStateTouchNextLayer = true;
+			}
+		}
+		else
+		{
+			previousStateTouchNextLayer = false;
+		}
+
+		if(inputArduino.GetTouch(2))
+		{
+			if(previousStateTouchCatch==false)
+			{
+				TryCatchCreature();
+				previousStateTouchCatch = true;
+			}
+		}
+		else
+		{
+			previousStateTouchCatch = false;
+		}
+
+		Slider3(inputArduino.GetClosenessDistance(4));
+		Slider4(inputArduino.GetClosenessDistance(3));
+		Slider5(inputArduino.GetClosenessDistance(7));
+		Slider6(inputArduino.GetClosenessDistance(0));
 
 
 	}
