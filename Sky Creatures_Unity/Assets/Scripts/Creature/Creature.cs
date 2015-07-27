@@ -25,6 +25,8 @@ public class Creature : MonoBehaviourBase
         }
 
         queuedCreatureParts = null;
+
+        gameObject.AddComponent<CreatureMovement>();
     }
 
     public CreaturePart GetPartPrefab(CreaturePartType type)
