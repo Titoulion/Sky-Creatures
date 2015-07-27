@@ -1,10 +1,6 @@
 fileFormatVersion: 2
 guid: e806a56f0b44e454dbef4cf0087e76b2
-<<<<<<< HEAD
-timeCreated: 1438005740
-=======
 timeCreated: 1437762848
->>>>>>> 678dd16258cdccd3169be573ab1a443dce5d1057
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -35,14 +31,14 @@ TextureImporter:
   textureFormat: -1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: 1
+    filterMode: -1
     aniso: 16
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   rGBM: 0
-  compressionQuality: 100
+  compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
@@ -58,19 +54,12 @@ TextureImporter:
     - name: owl-arm_0
       rect:
         serializedVersion: 2
-<<<<<<< HEAD
-        x: 180
-        y: 42
-        width: 137
-        height: 308
-=======
         x: 188
         y: 46
         width: 110
         height: 296
->>>>>>> 678dd16258cdccd3169be573ab1a443dce5d1057
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: owl-arm_1
       rect:
@@ -80,7 +69,7 @@ TextureImporter:
         width: 110
         height: 256
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
