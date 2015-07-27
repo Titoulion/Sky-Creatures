@@ -1,9 +1,11 @@
 fileFormatVersion: 2
 guid: fe44dad9b842d9e4aa566bcc51fe7b70
-timeCreated: 1437677849
+timeCreated: 1438007231
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: owl-foot_0
+    21300002: owl-foot_1
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -36,8 +38,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   rGBM: 0
+<<<<<<< HEAD
   compressionQuality: 100
   spriteMode: 1
+=======
+  compressionQuality: 50
+  spriteMode: 2
+>>>>>>> 678dd16258cdccd3169be573ab1a443dce5d1057
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -48,7 +55,27 @@ TextureImporter:
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: owl-foot_0
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 26
+        width: 64
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: owl-foot_1
+      rect:
+        serializedVersion: 2
+        x: 412
+        y: 27
+        width: 59
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
   assetBundleName: 

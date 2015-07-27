@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 21acfd0499b9f4048a500a57211f0223
-timeCreated: 1437754478
+timeCreated: 1437762832
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -54,22 +54,22 @@ TextureImporter:
     - name: dog-arm_0
       rect:
         serializedVersion: 2
-        x: 223
-        y: 0
-        width: 135
-        height: 149
+        x: 195
+        y: 13
+        width: 166
+        height: 172
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: dog-arm_1
       rect:
         serializedVersion: 2
-        x: 428
-        y: 1
-        width: 65
-        height: 150
+        x: 425
+        y: 12
+        width: 96
+        height: 177
       alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

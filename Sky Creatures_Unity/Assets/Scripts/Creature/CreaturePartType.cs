@@ -2,7 +2,9 @@
 {
     Body,
     Head,
-    Feet,
     Tail,
-    Arms
+    ArmLeft,
+    ArmRight,
+    FootLeft,
+    FootRight
 }
