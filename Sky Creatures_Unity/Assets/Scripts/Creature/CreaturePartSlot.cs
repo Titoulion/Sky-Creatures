@@ -8,12 +8,12 @@ public class CreaturePartSlot : MonoBehaviourBase
 {
     [SerializeField] private CreaturePartType type;
 
-    public void Fill()
+    public void Fill(Creature creature)
     {
-        var partPrefab = CreatureCreator.Instance.GetRandomPartPrefab(type);
+        var partPrefab = creature.GetPartPrefab(type);
         var part = InstantiatePrefab(partPrefab, transform.position, transform.rotation);
         part.transform.parent = transform;
         
-        part.FillSlots();
+        part.FillSlots(creature);
     }
 }
