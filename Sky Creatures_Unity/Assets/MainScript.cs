@@ -33,7 +33,7 @@ public class MainScript : MonoBehaviour {
 	int indexCreatureLayer = 0;
 	public float distanceCreatureMax = 0.2f;
 
-	public CreatureScript currentCreature;
+
 	public float distanceMinToAppear = 0.1f;
 
 	public static MainScript Instance;
@@ -45,6 +45,18 @@ public class MainScript : MonoBehaviour {
 	bool previousStateTouchCatch = false;
 	//public float horizontalSpeed = 0f;
 
+
+	bool isCreatuePresent = false;
+
+	CreatureScript[] listCreatures;
+
+	public GameObject nothingToCatch;
+
+	public GameObject notWorking;
+
+	public bool useArduino=false;
+
+
 	void Awake()
 	{
 		Instance = this;
@@ -55,14 +67,53 @@ public class MainScript : MonoBehaviour {
 		//CreatureCreator.Instance.
 
 
-		//inputArduino = ArduinoInput.Instance;
+		inputArduino = ArduinoInput.Instance;
+
+		InstantiateCreature();
+		isCreatuePresent = true;
+
+
 		PlaceLayers(frontIndex);
 	}
+
+	void InstantiateCreature()
+	{
+		listCreatures = new CreatureScript[4];
+
+
+		for(int i = 0; i<4;i++)
+		{
+			Creature newMob = CreatureCreator.Instance.SpawnRandom();
+			
+			newMob.gameObject.AddComponent<CreatureScript>();
+
+			CreatureScript newCreature = newMob.GetComponent<CreatureScript>();
+
+			listLayers[i].SetMyCreature(newCreature);
+
+
+
+
+		}
+
+
+
+
+
+
+	}
+
+
 	
 	// Update is called once per frame
 	void Update () 
 	{
+
+
 		KeyboardInputs();
+
+
+
 
 		GetArduinoInputs();
 
@@ -95,11 +146,29 @@ public class MainScript : MonoBehaviour {
 				GoNextLayer();
 				previousStateTouchNextLayer = true;
 			}
+
+
 		}
 		else
 		{
 			previousStateTouchNextLayer = false;
+
+
+
+
 		}
+
+
+		if(inputArduino.GetTouch(6)||inputArduino.GetTouch(1))
+		{
+			notWorking.GetComponent<Renderer>().enabled = true;
+		}
+		else
+		{
+			notWorking.GetComponent<Renderer>().enabled = false;
+		}
+
+
 
 		if(inputArduino.GetTouch(2))
 		{
@@ -108,16 +177,27 @@ public class MainScript : MonoBehaviour {
 				TryCatchCreature();
 				previousStateTouchCatch = true;
 			}
+
+
+
+
+
 		}
 		else
 		{
 			previousStateTouchCatch = false;
+			nothingToCatch.GetComponent<Renderer>().enabled = false;
 		}
 
-		Slider3(inputArduino.GetClosenessDistance(4));
-		Slider4(inputArduino.GetClosenessDistance(3));
-		Slider5(inputArduino.GetClosenessDistance(7));
-		Slider6(inputArduino.GetClosenessDistance(0));
+		if(useArduino)
+		{
+			Slider3(inputArduino.GetClosenessDistance(4));
+			Slider4(inputArduino.GetClosenessDistance(3));
+			Slider5(inputArduino.GetClosenessDistance(7));
+			Slider6(inputArduino.GetClosenessDistance(0));
+		}
+
+	
 
 
 	}
@@ -135,40 +215,33 @@ public class MainScript : MonoBehaviour {
 
 
 
-		for(int i = 0; i<listLayers.Length;i++)
-		{
-			if(i!=currentCreature.myLayer)
-			{
-				listLayers[i].SetValueFeedbackDistance(0f);
-			}
-			else
-			{
+		//for(int i = 0; i<listLayers.Length;i++)
+		//{
 
-				Vector2 pointB = new Vector2(Modulo(currentCreature.myCoordinate.x,1f),Modulo(currentCreature.myCoordinate.y,1f));
+		int i = frontIndex;
+
+				CreatureScript layerCreature = listLayers[i].myCreature;
+
+				Vector2 pointB = new Vector2(Modulo(layerCreature.myCoordinate.x,1f),Modulo(layerCreature.myCoordinate.y,1f));
 				Vector2 pointA = new Vector2(listLayers[i].GetValueX(),listLayers[i].GetValueY());
 
 				float distance = GetMinDistanceInLoop(pointA,pointB);
 
-
-
-
+				
 				float feedbackValue = (distance>distanceCreatureMax ?0f:1f-(distance/distanceCreatureMax ));
 
 				listLayers[i].SetValueFeedbackDistance(feedbackValue);
 
 				if(distance<=distanceMinToAppear)
 				{
-					currentCreature.Show();
+					layerCreature.Show();
 				}
 				else
 				{
-					currentCreature.Hide();
+					layerCreature.Hide();
 				}
 
-
-			}
-
-		}
+	//	}
 
 
 
@@ -249,8 +322,6 @@ public class MainScript : MonoBehaviour {
 
 
 
-				if(currentCreature.myLayer == frontIndex)
-				currentCreature.SetAlpha(Mathf.Clamp01(1f-progressVanish*2f));
 
 				for(int i = 0; i<listLayers.Length;i++)
 				{
@@ -297,8 +368,7 @@ public class MainScript : MonoBehaviour {
 
 				progressVanish=Mathf.Clamp01(progressVanish-Time.deltaTime/durationVanishOut);
 
-				if(currentCreature.myLayer == Modulo ((float)(frontIndex+listLayers.Length-1),listLayers.Length))
-				currentCreature.SetAlpha(Mathf.Clamp01(1f-progressVanish*2f));
+
 
 				listLayers[indexToVanish].Vanish(progressVanish);
 				if(progressVanish==0f)
@@ -374,9 +444,9 @@ public class MainScript : MonoBehaviour {
 
 	public void TryCatchCreature()
 	{
-		if(reorganising==false && frontIndex == currentCreature.myLayer)
+		if(reorganising==false)
 		{
-			currentCreature.CatchMe();
+			listLayers[frontIndex].myCreature.CatchMe();
 		}
 	}
 
@@ -404,5 +474,6 @@ public class MainScript : MonoBehaviour {
 	public void EndCatch()
 	{
 		catching = false;
+		Application.LoadLevel (1);
 	}
 }

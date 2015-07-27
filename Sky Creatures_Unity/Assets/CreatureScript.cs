@@ -1,24 +1,59 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CreatureScript : MonoBehaviour {
 	public Vector2 myCoordinate;
 	public int myLayer;
 
 	bool apparait = false;
-	float progressApparition = 0f;
+	public float progressApparition = 0f;
 
 	MainScript main;
 
-	Material myMat;
+	public Material myMatBase;
 
 	bool caugth = false;
 
 	float progressCatch = 0f;
 	// Use this for initialization
+
+	public List<Material> myMats = new List<Material>();
+
+
+
+
+
+
+
+	public void SetRandomPosition(int layer)
+	{
+		myLayer = layer;
+		myMatBase = Resources.Load("MatSprite"+myLayer.ToString(), typeof(Material)) as Material;
+
+		myCoordinate = new Vector2(Random.value,Random.value);
+	}
+
 	void Start () {
+
+
+
+		InitMats();
+
+
 		main = MainScript.Instance;
-		myMat = GetComponent<Renderer>().material;
+		//myMat = GetComponent<Renderer>().material;
+	}
+
+	void InitMats()
+	{
+		Renderer[] allMats = GetComponentsInChildren<Renderer>();
+
+		foreach(Renderer rend in allMats)
+		{
+			//myMats.Add(rend.material);
+			rend.material = myMatBase;
+		}
 	}
 	
 	// Update is called once per frame
@@ -37,7 +72,8 @@ public class CreatureScript : MonoBehaviour {
 
 			progressCatch=Mathf.Clamp01(progressCatch);
 
-			transform.localScale = Mathf.Lerp(1f,10f,progressCatch)*new Vector3(30f,57f,1f)*0.1f;
+			transform.localScale = Mathf.Lerp(1f,10f,progressCatch)*new Vector3(8f,8f,8f)*0.1f;
+
 			SetAlpha (1f-progressCatch);
 
 			if(progressCatch==1f)
@@ -53,19 +89,28 @@ public class CreatureScript : MonoBehaviour {
 
 		if(caugth==false)
 		{
-			if(!apparait)
+			if(myLayer==main.frontIndex)
 			{
-				progressApparition-=Time.deltaTime/0.5f;
+				progressCatch+=Time.deltaTime;
+
+
 			}
 			else
 			{
-				progressApparition+=Time.deltaTime/0.5f;
+				progressCatch-=Time.deltaTime;
 			}
-			
-			
-			progressApparition = Mathf.Clamp01(progressApparition);
-			
-			transform.localScale = Mathf.Lerp(0f,1f,progressApparition)*new Vector3(30f,57f,1f)*0.1f;
+
+			progressCatch=Mathf.Clamp01(progressCatch);
+			SetAlpha (progressCatch);
+
+
+
+
+
+
+
+
+
 		}
 
 
@@ -74,7 +119,8 @@ public class CreatureScript : MonoBehaviour {
 
 	public void SetAlpha(float value)
 	{
-		myMat.SetFloat("_MyAlpha",value);
+		//myMat.SetFloat("_MyAlpha",value);
+		myMatBase.SetColor("_Color",new Color(1f,1f,1f,value));
 	}
 
 	public void CatchMe()
