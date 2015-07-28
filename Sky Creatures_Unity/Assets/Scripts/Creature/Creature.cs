@@ -36,7 +36,7 @@ public class Creature : MonoBehaviourBase
             return queuedPart;
         }
 
-        var part = CreatureCreator.Instance.GetRandomPartPrefab(type);
+        var part = creatureCreator.GetRandomPartPrefab(type);
         if (part.PairedTo != null)
         {
             queuedCreatureParts.Add(part.PairedTo.Type, part.PairedTo);
