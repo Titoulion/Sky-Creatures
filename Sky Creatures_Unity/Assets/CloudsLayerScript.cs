@@ -18,6 +18,8 @@ public class CloudsLayerScript : MonoBehaviour {
 
 
 
+
+
 	public void SetMyCreature(CreatureScript creat)
 	{
 		myCreature = creat;
@@ -52,7 +54,9 @@ public class CloudsLayerScript : MonoBehaviour {
 	{
 		currentValueFeedbackDistance = Mathf.Lerp(currentValueFeedbackDistance,valueFeedbackDistance,0.1f);
 		myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
-		myCreature.myMatBase.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
+		myCreature.myMatBase.SetFloat("_ProgressApparition",currentValueFeedbackDistance);
+
+
 	}
 
 	public void Vanish(float progress)
