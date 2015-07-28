@@ -72,6 +72,8 @@ public class MainScript : MonoBehaviour {
 
 	public AnimationCurve curveFeedback;
 
+	public float distanceMaxToCatch = 0.1f;
+
 	void Awake()
 	{
 
@@ -467,7 +469,7 @@ public class MainScript : MonoBehaviour {
 			Vector2 posCreature = currentCreature.myCoordinate;
 			Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
 
-			if(GetMinDistanceInLoop(posCreature,posInLayer)<0.12f)
+			if(GetMinDistanceInLoop(posCreature,posInLayer)<distanceMaxToCatch)
 			{
 
 				Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
