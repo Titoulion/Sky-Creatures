@@ -24,16 +24,16 @@ public class CloudsLayerScript : MonoBehaviour {
 	{
 		myCreature = creat;
 		myCreature.SetRandomPosition(indexLayer);
-		myCreature.gameObject.transform.parent = transform;
-		myCreature.gameObject.transform.localPosition = new Vector3(0f,2f,-1.83f);
-		myCreature.gameObject.transform.localScale = new Vector3(0.6f,0.6f,0.6f);
+		//myCreature.gameObject.transform.parent = transform;
+		myCreature.gameObject.transform.position = new Vector3(0f,-17f,-1.83f);
+		myCreature.gameObject.transform.localScale = new Vector3(6f,6f,6f);
 
 
 		myCreature.myMatBase.SetTexture("_Perlin3",myMat.GetTexture("_Perlin3"));
 		myCreature.myMatBase.SetTexture("_Perlin4",myMat.GetTexture("_Perlin4"));
 
-		myCreature.myMatBase.SetTextureOffset("_Perlin3",myMat.GetTextureOffset("_Perlin3"));
-		myCreature.myMatBase.SetTextureOffset("_Perlin4",myMat.GetTextureOffset("_Perlin4"));
+		myCreature.myMatBase.SetTextureOffset("_Perlin3",new Vector2(myMat.GetTextureOffset("_Perlin3").x+myMat.GetTextureScale("_Perlin3").x,myMat.GetTextureOffset("_Perlin3").y+myMat.GetTextureScale("_Perlin3").y-0.5f));
+		myCreature.myMatBase.SetTextureOffset("_Perlin4",new Vector2(myMat.GetTextureOffset("_Perlin4").x+myMat.GetTextureScale("_Perlin4").x,myMat.GetTextureOffset("_Perlin4").y+myMat.GetTextureScale("_Perlin4").y-0.5f));
 		myCreature.myMatBase.SetTextureScale("_Perlin3",new Vector2(-myMat.GetTextureScale("_Perlin3").x,myMat.GetTextureScale("_Perlin3").y));
 		myCreature.myMatBase.SetTextureScale("_Perlin4",new Vector2(-myMat.GetTextureScale("_Perlin4").x,myMat.GetTextureScale("_Perlin4").y));
 
@@ -53,7 +53,7 @@ public class CloudsLayerScript : MonoBehaviour {
 	void Update () 
 	{
 		currentValueFeedbackDistance = Mathf.Lerp(currentValueFeedbackDistance,valueFeedbackDistance,0.1f);
-		myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
+		//myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
 		myCreature.myMatBase.SetFloat("_ProgressApparition",currentValueFeedbackDistance);
 
 
@@ -64,20 +64,28 @@ public class CloudsLayerScript : MonoBehaviour {
 		myMat.SetFloat ("_SizeClouds", Mathf.Lerp(minMaxCloud.x,minMaxCloud.y,curveVanish.Evaluate(progress)));
 	}
 
-	public void SetHorizontalSpeed(float value)
+	public void SetTransitionColor(float value)
 	{
-		Vector2 valueOffset = myMat.GetTextureOffset("_Perlin3");
-		valueOffset.x+= value;
+		//Vector2 valueOffset = myMat.GetTextureOffset("_Perlin3");
+		//valueOffset.x+= value;
 
-		myMat.SetTextureOffset("_Perlin3",valueOffset);
-		myCreature.myMatBase.SetTextureOffset("_Perlin3",valueOffset);
+		//myMat.SetTextureOffset("_Perlin3",valueOffset);
+		//myCreature.myMatBase.SetTextureOffset("_Perlin3",valueOffset);
 
-
-
-		valueOffset = myMat.GetTextureOffset("_TextureFeedback");
-		valueOffset.x+= value;
+		float value1 = myMat.GetFloat("_TransitionColor");
+		value1+= value;
 		
-		myMat.SetTextureOffset("_TextureFeedback",valueOffset);
+		
+		
+		myMat.SetFloat("_TransitionColor",value1);
+	//	myCreature.myMatBase.SetFloat("_TransitionColor",value);
+
+		//valueOffset = myMat.GetTextureOffset("_TextureFeedback");
+	//	valueOffset.x+= value;
+
+
+		
+		//myMat.SetTextureOffset("_TextureFeedback",valueOffset);
 
 	
 	}
@@ -98,12 +106,12 @@ public class CloudsLayerScript : MonoBehaviour {
 
 	public float GetValueX()
 	{
-		return(Modulo (myMat.GetTextureOffset("_Perlin3").x,1f));
+		return(Modulo (myMat.GetFloat("_ValueDistort"),Mathf.PI*2f)/(2f*Mathf.PI));
 	}
 
 	public float GetValueY()
 	{
-		return(Modulo (myMat.GetFloat("_ValueDistort"),Mathf.PI*2f)/(2f*Mathf.PI));
+		return(Modulo (myMat.GetFloat("_TransitionColor"),Mathf.PI*2f)/(2f*Mathf.PI));
 	}
 
 	public void SetValueFeedbackDistance(float value)

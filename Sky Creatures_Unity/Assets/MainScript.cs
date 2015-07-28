@@ -94,10 +94,10 @@ public class MainScript : MonoBehaviour {
 
 	void InstantiateCreature()
 	{
-		listCreatures = new CreatureScript[4];
+		listCreatures = new CreatureScript[listLayers.Length];
 
 
-		for(int i = 0; i<4;i++)
+		for(int i = 0; i<listLayers.Length;i++)
 		{
 			Creature newMob = CreatureCreator.Instance.SpawnRandom();
 			
@@ -227,18 +227,18 @@ public class MainScript : MonoBehaviour {
 
 	void UpdateValuesDistance()
 	{
-		if(tryingToCatch==false)
+		if(CanChangeValues())
 		{
 
 		
 
 
 
-		float horizontalSpeed = (value4-value3)*0.01f;
-		listLayers[frontIndex].SetHorizontalSpeed(horizontalSpeed);
+		float transitionColorSpeed = (value4-value3)*0.05f;
+		listLayers[frontIndex].SetTransitionColor(transitionColorSpeed);
 
 
-		float sensDistort = (value6-value5)*0.01f;
+		float sensDistort = (value6-value5)*0.04f;
 		listLayers[frontIndex].SetValueDistort(sensDistort);
 
 
@@ -332,6 +332,8 @@ public class MainScript : MonoBehaviour {
 			reorganising = true;
 			vanishing=true;
 
+		
+
 
 		}
 	}
@@ -347,8 +349,6 @@ public class MainScript : MonoBehaviour {
 				listLayers[indexToVanish].Vanish(progressVanish);
 
 
-
-
 				for(int i = 0; i<listLayers.Length;i++)
 				{
 					int _i = (int)Modulo((float)(frontIndex+i),(float)listLayers.Length);
@@ -357,10 +357,6 @@ public class MainScript : MonoBehaviour {
 					listLayers[_i].gameObject.transform.position = Vector3.forward*Map ((float)i,0f,(float)(listLayers.Length-1),0f,marginLayers*(float)(listLayers.Length-1))+Vector3.forward*marginLayers*(motionLayerForward?-1f:1f)*progressVanish;
 					//listLayers[_i].gameObject.transform.localScale = new Vector3(1f,1f,1f)*Map ((float)i+progressGlobal,(float)0f,(float)(listLayers.Length),11.82f,67.64f);
 				}
-
-
-
-
 
 				if(progressVanish==1f)
 				{
@@ -380,8 +376,6 @@ public class MainScript : MonoBehaviour {
 					}
 
 
-
-
 					PlaceLayers(frontIndex);
 					vanishing = false;
 				}
@@ -396,11 +390,15 @@ public class MainScript : MonoBehaviour {
 
 
 
-				listLayers[indexToVanish].Vanish(progressVanish);
+				//listLayers[indexToVanish].Vanish(progressVanish);
 				if(progressVanish==0f)
 				{
 					reorganising = false;
+					catching = false;
+					tryingToCatch = false;
 				}
+
+			
 			}
 
 
@@ -436,30 +434,29 @@ public class MainScript : MonoBehaviour {
 		return a - b * Mathf.Floor(a / b);
 	}
 
-	public void Slider1(float value){	if(tryingToCatch==false)value1 = value;	}
-	public void Slider2(float value){	if(tryingToCatch==false)value2 = value;	}
-	public void Slider3(float value){	if(tryingToCatch==false)value3 = value;	}
-	public void Slider4(float value){	if(tryingToCatch==false)value4 = value;	}
-	public void Slider5(float value){	if(tryingToCatch==false)value5 = value;	}
-	public void Slider6(float value){	if(tryingToCatch==false)value6 = value;	}
-	public void Slider7(float value){	if(tryingToCatch==false)value7 = value;	}
-	public void Slider8(float value){	if(tryingToCatch==false)value8 = value;	}
+	public void Slider1(float value){	if(CanChangeValues())value1 = value;	}
+	public void Slider2(float value){	if(CanChangeValues())value2 = value;	}
+	public void Slider3(float value){	if(CanChangeValues())value3 = value;	}
+	public void Slider4(float value){	if(CanChangeValues())value4 = value;	}
+	public void Slider5(float value){	if(CanChangeValues())value5 = value;	}
+	public void Slider6(float value){	if(CanChangeValues())value6 = value;	}
+	public void Slider7(float value){	if(CanChangeValues())value7 = value;	}
+	public void Slider8(float value){	if(CanChangeValues())value8 = value;	}
+
+	public bool CanChangeValues()
+	{
+		return(tryingToCatch==false && catching == false && reorganising == false);
+	}
 
 	public void GoNextLayer()
 	{
-		if(catching==false)
 		LaunchReorganisation(true);
 	}
 
 	public void TryCatchCreature()
 	{
-		if(reorganising==false)
+		if(CanChangeValues())
 		{
-
-
-
-
-
 
 
 			listLayers[frontIndex].myCreature.CatchMe();
@@ -470,20 +467,33 @@ public class MainScript : MonoBehaviour {
 			Vector2 posCreature = currentCreature.myCoordinate;
 			Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
 
-			if(Vector2.Distance(posCreature,posInLayer)<0.18f)
+			if(GetMinDistanceInLoop(posCreature,posInLayer)<0.12f)
 			{
+
+				Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
 				catchingCreature = true;
+
+
 			}
 			else
 			{
 				catchingCreature = false;
+
 			}
 
-
 			tryingToCatch = true;
+			catching = true;
 
 
 		}
+	}
+
+	IEnumerator GoAndChangeLayer()
+	{
+		yield return new WaitForSeconds(1f);
+		GoNextLayer ();
+
+
 	}
 
 	void EffectCatch()
@@ -493,7 +503,7 @@ public class MainScript : MonoBehaviour {
 			progressCatch+=Time.deltaTime/3f;
 			progressCatch = Mathf.Clamp01(progressCatch);
 
-			Camera.main.GetComponent<Vortex>().angle = curveEffectCatch.Evaluate(progressCatch)*1000f;
+			Camera.main.GetComponent<Vortex>().angle = curveEffectCatch.Evaluate(progressCatch)*(catchingCreature?1000f:300f);
 
 
 			CloudsLayerScript currentLayer = listLayers[frontIndex];
@@ -501,14 +511,29 @@ public class MainScript : MonoBehaviour {
 
 			if(catchingCreature)
 			{
-				currentCreature.gameObject.transform.localScale = Vector3.one*0.6f*(curveSizeCatchingCreature.Evaluate(progressCatch));
-				currentCreature.gameObject.transform.localPosition = Vector3.Lerp(currentCreature.gameObject.transform.localPosition,Vector3.zero,0.05f);
+				currentCreature.gameObject.transform.localScale = Vector3.one*6f*(curveSizeCatchingCreature.Evaluate(progressCatch));
+
+
+
+				currentCreature.gameObject.transform.position = Vector3.Lerp(currentCreature.gameObject.transform.localPosition,new Vector3(0f,-17f,-1.83f),0.05f);
+
 			}
 
 			if(progressCatch==1f)
 			{
 				progressCatch = 0f;
 				tryingToCatch = false;
+
+
+				if(catchingCreature)
+				{
+					StartCoroutine(GoAndChangeLayer());
+				}
+				else
+				{
+					catching = false;
+				}
+
 			}
 
 
