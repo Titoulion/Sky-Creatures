@@ -60,28 +60,11 @@ public class CreatureScript : MonoBehaviour {
 	void Update () 
 	{
 		Apparition();
-		Attrape();
+
 
 	}
 
-	void Attrape()
-	{
-		if(caugth)
-		{
-			progressCatch+=Time.deltaTime;
 
-			progressCatch=Mathf.Clamp01(progressCatch);
-
-			transform.localScale = Mathf.Lerp(1f,10f,progressCatch)*new Vector3(8f,8f,8f)*0.1f;
-
-			SetAlpha (1f-progressCatch);
-
-			if(progressCatch==1f)
-			{
-				main.EndCatch();
-			}
-		}
-	}
 
 	void Apparition()
 	{
