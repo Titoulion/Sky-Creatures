@@ -8,7 +8,7 @@ using UnityEngine;
 public class Countdown
 {
     public Func<float> CalculateCountdownLength { get; private set; }
-    public float TimeLeft { get; private set; }
+    public float TimeLeft { get; set; }
     public float TotalTime { get; private set; }
 
     private float startValue;
