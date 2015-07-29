@@ -33,10 +33,19 @@ public class CreatureCreator : SingletonMonoBehaviour<CreatureCreator>
         }
     }
 
-    public Creature SpawnRandom()
+    public Creature SpawnRandom(int seed = -1)
     {
+        if (seed == -1)
+        {
+            seed = UnityEngine.Random.Range(0, 100000) + (int)(DateTime.Now.Ticks % int.MaxValue);
+        }
+
+        UnityEngine.Random.seed = seed;
+
         var creature = InstantiatePrefab(creatureBasePrefabs.RandomElement());
         creature.Create();
+        creature.Seed = seed;
+
         return creature;
     }
 

@@ -8,6 +8,7 @@ public class Creature : MonoBehaviourBase
 {
     private CreatureCreator creatureCreator;
     private Dictionary<CreaturePartType, CreaturePart> queuedCreatureParts;
+    public int Seed { get; set; }
 
     private void Awake()
     {
