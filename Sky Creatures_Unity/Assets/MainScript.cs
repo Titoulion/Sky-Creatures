@@ -90,17 +90,19 @@ public class MainScript : MonoBehaviour {
 
 	bool endGame = false;
 
-
+	NetworkConnection network;
 
 	void Awake()
 	{
-
+		network = GameObject.FindObjectOfType<NetworkConnectionPlayerIO>();
 		Instance = this;
 	}
 
 	void Start () 
 	{
 		//CreatureCreator.Instance.
+
+
 
 
 		inputArduino = ArduinoInput.Instance;
@@ -117,8 +119,15 @@ public class MainScript : MonoBehaviour {
 		listCreatures = new CreatureScript[listLayers.Length];
 
 
+		int[] seeds = new int[3];
+
+
+
 		for(int i = 0; i<listLayers.Length;i++)
 		{
+
+
+
 			Creature newMob = CreatureCreator.Instance.SpawnRandom();
 			
 			newMob.gameObject.AddComponent<CreatureScript>();
@@ -127,12 +136,13 @@ public class MainScript : MonoBehaviour {
 
 			listLayers[i].SetMyCreature(newCreature);
 
+			seeds[i] = newMob.Seed;
 
 
 
 		}
 
-
+		network.SendSpawnCreatures(seeds);
 
 
 
@@ -169,7 +179,7 @@ public class MainScript : MonoBehaviour {
 
 		if(Input.GetKeyDown(KeyCode.R))
 		{
-			Application.LoadLevel(1);
+			Application.LoadLevel("MainScene");
 		}
 	
 
@@ -467,7 +477,7 @@ public class MainScript : MonoBehaviour {
 	IEnumerator GoRestart()
 	{
 		yield return new WaitForSeconds(2f);
-		Application.LoadLevel(1);
+		Application.LoadLevel("MainScene");
 	}
 
 
@@ -519,9 +529,14 @@ public class MainScript : MonoBehaviour {
 	public void TryCatchCreature()
 	{
 
-		if(gameStarted==false)
+		if(gameStarted==false && Time.timeSinceLevelLoad>3f)
 		{
 			gameStarted = true;
+			Debug.Log ("game starting");
+			network.SendCreaturesFlyAway();
+
+
+
 		}
 		else
 		{
@@ -542,6 +557,8 @@ public class MainScript : MonoBehaviour {
 					
 					Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
 					catchingCreature = true;
+
+					network.SendCreatureCaught(currentCreature.GetComponent<Creature>().Seed);
 					
 					
 				}
@@ -640,7 +657,7 @@ public class MainScript : MonoBehaviour {
 	public void EndCatch()
 	{
 		catching = false;
-		Application.LoadLevel (1);
+
 	}
 
 
@@ -678,6 +695,9 @@ public class MainScript : MonoBehaviour {
 	
 	public void fadeOut(){
 		fadeDir = 1.0f;	
+
+		network.SendRemoveCreatures();
+
 	}
 
 }
