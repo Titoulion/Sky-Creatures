@@ -74,6 +74,24 @@ public class MainScript : MonoBehaviour {
 
 	public float distanceMaxToCatch = 0.1f;
 
+
+	public bool gameStarted =false;
+
+
+
+	public Texture2D fadeOutTexture;
+	public float fadeSpeed = 0.2f;
+	
+	private int drawDepth = -1000;
+	
+	private float alphaFade = 1.0f; 
+	
+	private float fadeDir = -1.0f;
+
+	bool endGame = false;
+
+
+
 	void Awake()
 	{
 
@@ -91,7 +109,7 @@ public class MainScript : MonoBehaviour {
 		isCreatuePresent = true;
 
 
-		PlaceLayers(frontIndex);
+		//PlaceLayers(frontIndex);
 	}
 
 	void InstantiateCreature()
@@ -151,7 +169,7 @@ public class MainScript : MonoBehaviour {
 
 		if(Input.GetKeyDown(KeyCode.R))
 		{
-			Application.LoadLevel(0);
+			Application.LoadLevel(1);
 		}
 	
 
@@ -168,7 +186,7 @@ public class MainScript : MonoBehaviour {
 		{
 			if(previousStateTouchNextLayer==false)
 			{
-				GoNextLayer();
+				//GoNextLayer();
 				previousStateTouchNextLayer = true;
 			}
 
@@ -184,42 +202,48 @@ public class MainScript : MonoBehaviour {
 		}
 
 
-		if(inputArduino.GetTouch(6)||inputArduino.GetTouch(1))
+		if(useArduino)
 		{
-			//notWorking.GetComponent<Renderer>().enabled = true;
+			if(inputArduino.GetTouch(4))
+			{
+				if(previousStateTouchCatch==false)
+				{
+					TryCatchCreature();
+					previousStateTouchCatch = true;
+				}
+				
+				
+				
+				
+				
+			}
+			else
+			{
+				previousStateTouchCatch = false;
+				//nothingToCatch.GetComponent<Renderer>().enabled = false;
+			}
 		}
 		else
 		{
-			//notWorking.GetComponent<Renderer>().enabled = false;
-		}
-
-
-
-		if(inputArduino.GetTouch(2) || Input.GetKeyDown(KeyCode.Return))
-		{
-			if(previousStateTouchCatch==false)
+			if(Input.GetKeyDown(KeyCode.Return))
 			{
-				TryCatchCreature();
-				previousStateTouchCatch = true;
+
+					TryCatchCreature();
+
 			}
 
-
-
-
-
 		}
-		else if(Input.GetKeyUp(KeyCode.Return))
-		{
-			previousStateTouchCatch = false;
-			//nothingToCatch.GetComponent<Renderer>().enabled = false;
-		}
+
+
+
+
 
 		if(useArduino)
 		{
-			Slider3(inputArduino.GetClosenessDistance(4));
-			Slider4(inputArduino.GetClosenessDistance(3));
-			Slider5(inputArduino.GetClosenessDistance(7));
-			Slider6(inputArduino.GetClosenessDistance(0));
+			Slider3(inputArduino.GetClosenessDistance(0));
+			Slider4(inputArduino.GetClosenessDistance(1));
+			Slider5(inputArduino.GetClosenessDistance(2));
+			Slider6(inputArduino.GetClosenessDistance(3));
 		}
 
 	
@@ -353,7 +377,7 @@ public class MainScript : MonoBehaviour {
 			{
 				progressVanish=Mathf.Clamp01(progressVanish+Time.deltaTime/durationVanishIn);
 
-				listLayers[indexToVanish].Vanish(progressVanish);
+				//listLayers[indexToVanish].Vanish(progressVanish);
 
 
 				for(int i = 0; i<listLayers.Length;i++)
@@ -361,7 +385,7 @@ public class MainScript : MonoBehaviour {
 					int _i = (int)Modulo((float)(frontIndex+i),(float)listLayers.Length);
 					
 					
-					listLayers[_i].gameObject.transform.position = Vector3.forward*Map ((float)i,0f,(float)(listLayers.Length-1),0f,marginLayers*(float)(listLayers.Length-1))+Vector3.forward*marginLayers*(motionLayerForward?-1f:1f)*progressVanish;
+					//listLayers[_i].gameObject.transform.position = Vector3.forward*Map ((float)i,0f,(float)(listLayers.Length-1),0f,marginLayers*(float)(listLayers.Length-1))+Vector3.forward*marginLayers*(motionLayerForward?-1f:1f)*progressVanish;
 					//listLayers[_i].gameObject.transform.localScale = new Vector3(1f,1f,1f)*Map ((float)i+progressGlobal,(float)0f,(float)(listLayers.Length),11.82f,67.64f);
 				}
 
@@ -372,7 +396,22 @@ public class MainScript : MonoBehaviour {
 					if(motionLayerForward)
 					{
 						//motionLayerForward = true;
-						frontIndex = (int)Modulo ((float)(frontIndex+1),(float)listLayers.Length);
+
+						if(frontIndex+1==listLayers.Length)
+						{
+							StartCoroutine(GoFadeOut());
+							endGame=true;
+						}
+						else
+						{
+							frontIndex = (int)Modulo ((float)(frontIndex+1),(float)listLayers.Length);
+						}
+
+
+
+
+
+
 						//indexToVanish = frontIndex;
 					}
 					else
@@ -383,8 +422,10 @@ public class MainScript : MonoBehaviour {
 					}
 
 
-					PlaceLayers(frontIndex);
+					//PlaceLayers(frontIndex);
 					vanishing = false;
+
+
 				}
 
 			}
@@ -403,6 +444,9 @@ public class MainScript : MonoBehaviour {
 					reorganising = false;
 					catching = false;
 					tryingToCatch = false;
+
+
+
 				}
 
 			
@@ -412,6 +456,18 @@ public class MainScript : MonoBehaviour {
 
 		}
 
+	}
+
+	IEnumerator GoFadeOut()
+	{
+		yield return new WaitForSeconds(2f);
+		fadeOut();
+	}
+
+	IEnumerator GoRestart()
+	{
+		yield return new WaitForSeconds(2f);
+		Application.LoadLevel(1);
 	}
 
 
@@ -452,7 +508,7 @@ public class MainScript : MonoBehaviour {
 
 	public bool CanChangeValues()
 	{
-		return(tryingToCatch==false && catching == false && reorganising == false);
+		return(tryingToCatch==false && catching == false && reorganising == false && gameStarted && endGame==false);
 	}
 
 	public void GoNextLayer()
@@ -462,37 +518,47 @@ public class MainScript : MonoBehaviour {
 
 	public void TryCatchCreature()
 	{
-		if(CanChangeValues())
+
+		if(gameStarted==false)
 		{
-
-
-			listLayers[frontIndex].myCreature.CatchMe();
-
-			CloudsLayerScript currentLayer = listLayers[frontIndex];
-			CreatureScript currentCreature = currentLayer.myCreature;
-
-			Vector2 posCreature = currentCreature.myCoordinate;
-			Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
-
-			if(GetMinDistanceInLoop(posCreature,posInLayer)<distanceMaxToCatch)
-			{
-
-				Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
-				catchingCreature = true;
-
-
-			}
-			else
-			{
-				catchingCreature = false;
-
-			}
-
-			tryingToCatch = true;
-			catching = true;
-
-
+			gameStarted = true;
 		}
+		else
+		{
+			if(CanChangeValues())
+			{
+				
+				
+				listLayers[frontIndex].myCreature.CatchMe();
+				
+				CloudsLayerScript currentLayer = listLayers[frontIndex];
+				CreatureScript currentCreature = currentLayer.myCreature;
+				
+				Vector2 posCreature = currentCreature.myCoordinate;
+				Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
+				
+				if(GetMinDistanceInLoop(posCreature,posInLayer)<distanceMaxToCatch)
+				{
+					
+					Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
+					catchingCreature = true;
+					
+					
+				}
+				else
+				{
+					catchingCreature = false;
+					
+				}
+				
+				tryingToCatch = true;
+				catching = true;
+				
+				
+			}
+		}
+
+
 	}
 
 	IEnumerator GoAndChangeLayer()
@@ -510,7 +576,7 @@ public class MainScript : MonoBehaviour {
 			progressCatch+=Time.deltaTime/3f;
 			progressCatch = Mathf.Clamp01(progressCatch);
 
-			Camera.main.GetComponent<Vortex>().angle = curveEffectCatch.Evaluate(progressCatch)*(catchingCreature?1000f:300f);
+			Camera.main.GetComponent<Vortex>().angle = curveEffectCatch.Evaluate(progressCatch)*(catchingCreature?900f:300f);
 
 
 			CloudsLayerScript currentLayer = listLayers[frontIndex];
@@ -576,4 +642,42 @@ public class MainScript : MonoBehaviour {
 		catching = false;
 		Application.LoadLevel (1);
 	}
+
+
+	void OnGUI()
+	{
+		if(Time.timeSinceLevelLoad>1f)
+		{
+			alphaFade += fadeDir * fadeSpeed * Time.deltaTime;
+
+			if(alphaFade>1f && fadeDir == 1f)
+			{
+				StartCoroutine(GoRestart());
+			}
+		}
+			
+		
+		alphaFade = Mathf.Clamp01(alphaFade);	
+		
+		Color col;
+		col = new Color(1.0f,1.0f,1.0f,alphaFade);
+		
+		
+		GUI.color = col;
+		
+		GUI.depth = drawDepth;
+		
+		GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), fadeOutTexture);
+	}
+
+	public void fadeIn(){
+		fadeDir = -1.0f;	
+	}
+	
+
+	
+	public void fadeOut(){
+		fadeDir = 1.0f;	
+	}
+
 }

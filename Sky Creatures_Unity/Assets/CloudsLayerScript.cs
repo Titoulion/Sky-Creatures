@@ -15,6 +15,7 @@ public class CloudsLayerScript : MonoBehaviour {
 	public CreatureScript myCreature;
 
 	public int indexLayer;
+	float progressIntro = 0f;
 
 
 
@@ -52,13 +53,26 @@ public class CloudsLayerScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-		currentValueFeedbackDistance = Mathf.Lerp(currentValueFeedbackDistance,valueFeedbackDistance,0.1f);
-		//myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
-		myCreature.myMatBase.SetFloat("_ProgressApparition",currentValueFeedbackDistance);
+
+		if(MainScript.Instance.gameStarted)
+		{
+			currentValueFeedbackDistance = Mathf.Lerp(currentValueFeedbackDistance,valueFeedbackDistance,0.1f);
+			//myMat.SetFloat("_FeedbackDistance",currentValueFeedbackDistance);
+			myCreature.myMatBase.SetFloat("_ProgressApparition",currentValueFeedbackDistance);
+			
+			
+			if(MainScript.Instance.frontIndex == indexLayer)
+			{
+				progressIntro+=Time.deltaTime;
+				progressIntro = Mathf.Clamp01(progressIntro);
+			}
+
+		}
+
+		myMat.SetFloat("_ProgressIntro",progressIntro);
+		myCreature.myMatBase.SetFloat("_ProgressIntro",progressIntro);
 
 
-
-		myCreature.myMatBase.SetFloat("_ProgressIntro",myMat.GetFloat("_ProgressIntro"));
 
 
 

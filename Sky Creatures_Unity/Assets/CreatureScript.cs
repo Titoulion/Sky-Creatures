@@ -72,6 +72,7 @@ public class CreatureScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		//if(main.gameStarted)
 		Apparition();
 
 
