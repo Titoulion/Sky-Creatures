@@ -22,3 +22,5 @@ _ReSharper.*
 /Serverside Code/Game Code/obj
 /Serverside Code/Player.IO Test Server Project/bin
 /Serverside Code/Player.IO Test Server Project/obj
+/Sky Creatures_Unity/Assets/StreamingAssets/build_info.txt
+/Sky Creatures_Unity/Assets/StreamingAssets/build_info.txt.meta
