@@ -92,6 +92,8 @@ public class MainScript : MonoBehaviour {
 
 	NetworkConnection network;
 
+	bool introduction =false;
+
 	void Awake()
 	{
 		network = GameObject.FindObjectOfType<NetworkConnectionPlayerIO>();
@@ -142,12 +144,21 @@ public class MainScript : MonoBehaviour {
 
 		}
 
+
+		//StartCoroutine(WaitAndSpawn(seeds));
 		network.SendSpawnCreatures(seeds);
 
 
 
 
+
 	}
+
+	//IEnumerator WaitAndSpawn(int[] seeds)
+	//{
+	//	yield return new WaitForSeconds(3f);
+
+	//}
 
 
 	
@@ -526,55 +537,73 @@ public class MainScript : MonoBehaviour {
 		LaunchReorganisation(true);
 	}
 
+	IEnumerator LaunchIntroduction()
+	{
+		network.SendCreaturesFlyAway();
+		yield return new WaitForSeconds(2f);
+		gameStarted = true;
+		introduction = false;
+	}
+
+
+
 	public void TryCatchCreature()
 	{
-
-		if(gameStarted==false && Time.timeSinceLevelLoad>3f)
+		if(Time.timeSinceLevelLoad>2f && introduction==false)
 		{
-			gameStarted = true;
-			Debug.Log ("game starting");
-			network.SendCreaturesFlyAway();
-
-
-
-		}
-		else
-		{
-			if(CanChangeValues())
+			if(gameStarted==false)
 			{
-				
-				
-				listLayers[frontIndex].myCreature.CatchMe();
-				
-				CloudsLayerScript currentLayer = listLayers[frontIndex];
-				CreatureScript currentCreature = currentLayer.myCreature;
-				
-				Vector2 posCreature = currentCreature.myCoordinate;
-				Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
-				
-				if(GetMinDistanceInLoop(posCreature,posInLayer)<distanceMaxToCatch)
-				{
-					
-					Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
-					catchingCreature = true;
 
-					network.SendCreatureCaught(currentCreature.GetComponent<Creature>().Seed);
-					
-					
-				}
-				else
+				Debug.Log ("game starting");
+
+				introduction = true;
+				StartCoroutine(LaunchIntroduction());
+
+
+
+
+
+
+
+
+			}
+			else
+			{
+				if(CanChangeValues())
 				{
-					catchingCreature = false;
+					
+					
+					listLayers[frontIndex].myCreature.CatchMe();
+					
+					CloudsLayerScript currentLayer = listLayers[frontIndex];
+					CreatureScript currentCreature = currentLayer.myCreature;
+					
+					Vector2 posCreature = currentCreature.myCoordinate;
+					Vector2 posInLayer = new Vector2(currentLayer.GetValueX(),currentLayer.GetValueY());
+					
+					if(GetMinDistanceInLoop(posCreature,posInLayer)<distanceMaxToCatch)
+					{
+						
+						Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
+						catchingCreature = true;
+
+						network.SendCreatureCaught(currentCreature.GetComponent<Creature>().Seed);
+						
+						
+					}
+					else
+					{
+						catchingCreature = false;
+						
+					}
+					
+					tryingToCatch = true;
+					catching = true;
+					
 					
 				}
-				
-				tryingToCatch = true;
-				catching = true;
-				
-				
 			}
 		}
-
 
 	}
 
