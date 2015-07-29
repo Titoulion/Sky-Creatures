@@ -9,8 +9,10 @@ using UnityEngine.UI;
 
 public class NetworkConnectionPlayerIO : NetworkConnection
 {
-    private const string TYPE_CREATURE_CAUGHT = "A";
-    private const string TYPE_RESET_CREATURES = "B";
+    private const string TYPE_SPAWN_CREATURES = "A";
+    private const string TYPE_CREATURES_FLY_AWAY = "B";
+    private const string TYPE_CREATURE_CAUGHT = "C";
+    private const string TYPE_REMOVE_CREATURES = "D";
 
     public bool useDevelopmentServer = true;
     public float pingDelay = 0.5f;
@@ -145,12 +147,25 @@ public class NetworkConnectionPlayerIO : NetworkConnection
 
         switch (m.Type)
         {
-            case TYPE_RESET_CREATURES:
-                nest.ResetCreatures();
+            case TYPE_SPAWN_CREATURES:
+                var seeds = new int[m.GetInt(0)];
+                for (var i = 0u; i < seeds.Length; i++)
+                {
+                    seeds[i] = m.GetInt(i + 1);
+                }
+                nest.SpawnCreatures(seeds);
+                break;
+
+            case TYPE_CREATURES_FLY_AWAY:
+                nest.CreaturesFlyAway();
                 break;
 
             case TYPE_CREATURE_CAUGHT:
                 nest.CreatureCaught(m.GetInt(0));
+                break;
+
+            case TYPE_REMOVE_CREATURES:
+                nest.RemoveCreatures(true);
                 break;
         }
     }
@@ -163,12 +178,26 @@ public class NetworkConnectionPlayerIO : NetworkConnection
         }
     }
 
-    public override void SendResetCreatures()
+    public override void SendSpawnCreatures(int[] seeds)
     {
-        Debug.Log(Connection + "/" + TYPE_RESET_CREATURES);
         if (Connection != null)
         {
-            Connection.Send(TYPE_RESET_CREATURES);
+            var message = Message.Create(TYPE_SPAWN_CREATURES);
+            message.Add(seeds.Length);
+            foreach (var seed in seeds)
+            {
+                message.Add(seed);
+            }
+
+            Connection.Send(message);
+        }
+    }
+
+    public override void SendCreaturesFlyAway()
+    {
+        if (Connection != null)
+        {
+            Connection.Send(TYPE_CREATURES_FLY_AWAY);
         }
     }
 
@@ -177,6 +206,14 @@ public class NetworkConnectionPlayerIO : NetworkConnection
         if (Connection != null)
         {
             Connection.Send(TYPE_CREATURE_CAUGHT, seed);
+        }
+    }
+
+    public override void SendRemoveCreatures()
+    {
+        if (Connection != null)
+        {
+            Connection.Send(TYPE_REMOVE_CREATURES);
         }
     }
 

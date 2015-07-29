@@ -4,37 +4,34 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class NestTestNetwork : MonoBehaviourBase
+public class NestTestNetwork : NestTest
 {
     private NetworkConnection networkConnection;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         networkConnection = FindObjectOfType<NetworkConnectionPlayerIO>();
-        Debug.Log(networkConnection);
     }
 
-    private void Update()
+    protected override void CallSpawnCreatures(int[] seeds)
     {
-        if (networkConnection == null)
-            return;
+        networkConnection.SendSpawnCreatures(seeds);
+    }
 
-        for (var i = 1; i <= 9; i++)
-        {
-            if (Input.GetKeyDown(i.ToString()))
-            {
-                networkConnection.SendCreatureCaught(i);
-            }
-        }
+    protected override void CallCreaturesFlyAway()
+    {
+        networkConnection.SendCreaturesFlyAway();
+    }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            networkConnection.SendCreatureCaught(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
-        }
+    protected override void CallCreatureCaught(int seed)
+    {
+        networkConnection.SendCreatureCaught(seed);
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            networkConnection.SendResetCreatures();
-        }
+    protected override void CallRemoveCreatures()
+    {
+        networkConnection.SendRemoveCreatures();
     }
 }
