@@ -6,9 +6,13 @@ using UnityEngine;
 
 public class Creature : MonoBehaviourBase
 {
+    [SerializeField] private int pureDataCreatureIndex;
+
     private CreatureCreator creatureCreator;
     private Dictionary<CreaturePartType, CreaturePart> queuedCreatureParts;
     public int Seed { get; set; }
+
+    public int PureDataCreatureIndex { get { return pureDataCreatureIndex; } }
 
     private void Awake()
     {
