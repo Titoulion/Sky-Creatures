@@ -57,6 +57,11 @@ public class CloudsLayerScript : MonoBehaviour {
 		myCreature.myMatBase.SetFloat("_ProgressApparition",currentValueFeedbackDistance);
 
 
+
+		myCreature.myMatBase.SetFloat("_ProgressIntro",myMat.GetFloat("_ProgressIntro"));
+
+
+
 	}
 
 	public void Vanish(float progress)

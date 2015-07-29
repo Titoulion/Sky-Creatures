@@ -186,11 +186,11 @@ public class MainScript : MonoBehaviour {
 
 		if(inputArduino.GetTouch(6)||inputArduino.GetTouch(1))
 		{
-			notWorking.GetComponent<Renderer>().enabled = true;
+			//notWorking.GetComponent<Renderer>().enabled = true;
 		}
 		else
 		{
-			notWorking.GetComponent<Renderer>().enabled = false;
+			//notWorking.GetComponent<Renderer>().enabled = false;
 		}
 
 
@@ -211,7 +211,7 @@ public class MainScript : MonoBehaviour {
 		else if(Input.GetKeyUp(KeyCode.Return))
 		{
 			previousStateTouchCatch = false;
-			nothingToCatch.GetComponent<Renderer>().enabled = false;
+			//nothingToCatch.GetComponent<Renderer>().enabled = false;
 		}
 
 		if(useArduino)
@@ -305,6 +305,11 @@ public class MainScript : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.DownArrow))
 		{
 			//LaunchReorganisation(false);
+		}
+
+		if(Input.GetKeyDown(KeyCode.Escape))
+		{
+			Application.Quit();
 		}
 
 
