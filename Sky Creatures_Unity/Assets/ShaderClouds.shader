@@ -104,7 +104,8 @@ Shader "Shader Forge/ShaderClouds" {
                 float3 node_3404 = lerp(_RampA_var.rgb,_RampB_var.rgb,saturate((floor(_TextureColorTransition_var.r * _posterizeTransition) / (_posterizeTransition - 1)+(_remapTransitionMin + ( (((cos(_TransitionColor)+1.0)*0.5) - node_5998) * (_remapTransitionMax - _remapTransitionMin) ) / (1.0 - node_5998)))));
                 float4 _TextureFeedback_var = tex2D(_TextureFeedback,TRANSFORM_TEX(i.uv0, _TextureFeedback));
                 float3 node_2051 = lerp((node_2051_if_leA*lerp(node_3404,saturate(( node_3404 > 0.5 ? (floor(_TextureFeedback_var.rgb * _PosterizeStrength) / (_PosterizeStrength - 1)/((1.0-node_3404)*2.0)) : (1.0-(((1.0-floor(_TextureFeedback_var.rgb * _PosterizeStrength) / (_PosterizeStrength - 1))*0.5)/node_3404)))),_FeedbackDistance))+(node_2051_if_leB*_ColorOutline.rgb),_ColorOutline.rgb,node_2051_if_leA*node_2051_if_leB);
-                float3 node_1103 = lerp(node_2051,float3(0,0,0),saturate((node_8291*20.0+-8.999998)));
+                float3 node_460 = float3(0,0,0);
+                float3 node_1103 = lerp(node_2051,node_460,saturate((node_8291*20.0+-8.999998)));
                 float3 emissive = lerp((node_4067_if_leA*node_2051)+(node_4067_if_leB*node_1103),node_1103,node_4067_if_leA*node_4067_if_leB);
                 float3 finalColor = emissive;
                 float node_2610_if_leA = step(node_8291,0.5);

@@ -134,6 +134,7 @@ public class NetworkConnectionPlayerIO : NetworkConnection
 
         foreach (var message in queuedMessages)
         {
+			Debug.Log(message.Type);
             Connection.Send(message);
         }
         queuedMessages.Clear();
@@ -188,46 +189,34 @@ public class NetworkConnectionPlayerIO : NetworkConnection
 
     public override void SendSpawnCreatures(int[] seeds)
     {
-        if (Connection != null)
+        var message = Message.Create(TYPE_SPAWN_CREATURES);
+        message.Add(seeds.Length);
+        foreach (var seed in seeds)
         {
-            var message = Message.Create(TYPE_SPAWN_CREATURES);
-            message.Add(seeds.Length);
-            foreach (var seed in seeds)
-            {
-                message.Add(seed);
-            }
-
-            SendMessage(message);
+            message.Add(seed);
         }
+
+        SendMessage(message);
     }
 
     public override void SendCreaturesFlyAway()
     {
-        if (Connection != null)
-        {
-            SendMessage(Message.Create(TYPE_CREATURES_FLY_AWAY));
-        }
+        SendMessage(Message.Create(TYPE_CREATURES_FLY_AWAY)); 
     }
 
     public override void SendCreatureCaught(int seed)
     {
-        if (Connection != null)
-        {
-            SendMessage(Message.Create(TYPE_CREATURE_CAUGHT, seed));
-        }
+        SendMessage(Message.Create(TYPE_CREATURE_CAUGHT, seed)); 
     }
 
     public override void SendRemoveCreatures()
     {
-        if (Connection != null)
-        {
-            SendMessage(Message.Create(TYPE_REMOVE_CREATURES));
-        }
+        SendMessage(Message.Create(TYPE_REMOVE_CREATURES));   
     }
 
     private void SendMessage(Message message)
     {
-        if (joinedRoom)
+		if (joinedRoom)
         {
             Connection.Send(message);
         }
