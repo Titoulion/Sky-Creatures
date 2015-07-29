@@ -93,6 +93,9 @@ public class MainScript : MonoBehaviour {
 	NetworkConnection network;
 
 	bool introduction =false;
+	OSCPureDataConnection OSCStuff;
+
+
 
 	void Awake()
 	{
@@ -108,6 +111,7 @@ public class MainScript : MonoBehaviour {
 
 
 		inputArduino = ArduinoInput.Instance;
+		OSCStuff = OSCPureDataConnection.Instance;
 
 		InstantiateCreature();
 		isCreatuePresent = true;
@@ -195,10 +199,15 @@ public class MainScript : MonoBehaviour {
 	
 
 
+		GestionSound();
 
 
 
+	}
 
+	void GestionSound()
+	{
+		OSCStuff.SendDirections(inputArduino.GetClosenessDistance(1),inputArduino.GetClosenessDistance(0),inputArduino.GetClosenessDistance(3),inputArduino.GetClosenessDistance(2));
 	}
 
 	void GetArduinoInputs()
@@ -310,6 +319,8 @@ public class MainScript : MonoBehaviour {
 				listLayers[i].SetValueFeedbackDistance(curveFeedback.Evaluate(feedbackValue));
 
 				
+				OSCStuff.SendCreatureProximity(feedbackValue);
+				
 
 	//	}
 
@@ -325,16 +336,19 @@ public class MainScript : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Keypad0))
 		{
 			//PlaceLayers(0);
+			OSCStuff.SendLayer(0);
 		}
 
 		if(Input.GetKeyDown(KeyCode.Keypad1))
 		{
 			//PlaceLayers(1);
+			OSCStuff.SendLayer(1);
 		}
 
 		if(Input.GetKeyDown(KeyCode.Keypad2))
 		{
 			//PlaceLayers(2);
+			OSCStuff.SendLayer(2);
 		}
 
 		if(Input.GetKeyDown(KeyCode.Keypad3))
@@ -355,6 +369,21 @@ public class MainScript : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Escape))
 		{
 			Application.Quit();
+		}
+
+
+		if(Input.GetKeyDown(KeyCode.C))
+		{
+			string theCode = "";
+
+			for(int i =0;i<6;i++)
+			{
+				theCode+=Random.Range (0,6).ToString();
+			}
+
+			Debug.Log (theCode);
+
+			OSCStuff.SendCreatureCode(Random.Range(0,6));
 		}
 
 
@@ -549,7 +578,7 @@ public class MainScript : MonoBehaviour {
 
 	public void TryCatchCreature()
 	{
-		if(Time.timeSinceLevelLoad>2f && introduction==false)
+		if(Time.timeSinceLevelLoad>1f && introduction==false)
 		{
 			if(gameStarted==false)
 			{
@@ -596,6 +625,8 @@ public class MainScript : MonoBehaviour {
 						catchingCreature = false;
 						
 					}
+
+					OSCStuff.SendCreatureCatch(catchingCreature);
 					
 					tryingToCatch = true;
 					catching = true;
