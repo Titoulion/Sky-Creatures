@@ -39,7 +39,7 @@ public class MainScript : MonoBehaviour {
 	public float distanceCreatureMax = 0.2f;
 
 
-
+	bool isRestarting = false;
 
 	public static MainScript Instance;
 
@@ -94,6 +94,8 @@ public class MainScript : MonoBehaviour {
 
 	bool introduction =false;
 	OSCPureDataConnection OSCStuff;
+
+	public bool dontplaysound = false;
 
 
 
@@ -194,6 +196,7 @@ public class MainScript : MonoBehaviour {
 
 		if(Input.GetKeyDown(KeyCode.R))
 		{
+			dontplaysound=true;
 			Application.LoadLevel("MainScene");
 		}
 	
@@ -383,7 +386,7 @@ public class MainScript : MonoBehaviour {
 
 			Debug.Log (theCode);
 
-			OSCStuff.SendCreatureCode(Random.Range(0,6));
+			//OSCStuff.SendCreatureCode(Random.Range(0,6));
 		}
 
 
@@ -395,7 +398,7 @@ public class MainScript : MonoBehaviour {
 	{
 		if(reorganising == false)
 		{
-
+			OSCStuff.SendLayer(frontIndex);
 
 			if(moveForward)
 			{
@@ -517,6 +520,7 @@ public class MainScript : MonoBehaviour {
 	IEnumerator GoRestart()
 	{
 		yield return new WaitForSeconds(2f);
+		dontplaysound=true;
 		Application.LoadLevel("MainScene");
 	}
 
@@ -616,7 +620,9 @@ public class MainScript : MonoBehaviour {
 						Destroy (currentCreature.GetComponentInChildren<CreaturePartMovementCenterGravity>());
 						catchingCreature = true;
 
-						network.SendCreatureCaught(currentCreature.GetComponent<Creature>().Seed);
+
+						StartCoroutine(GoAndCatchCreature(currentCreature));
+
 						
 						
 					}
@@ -636,6 +642,12 @@ public class MainScript : MonoBehaviour {
 			}
 		}
 
+	}
+
+	IEnumerator GoAndCatchCreature(CreatureScript creaturee)
+	{
+		yield return new WaitForSeconds(2f);
+		network.SendCreatureCaught(creaturee.GetComponent<Creature>().Seed);
 	}
 
 	IEnumerator GoAndChangeLayer()
@@ -727,8 +739,9 @@ public class MainScript : MonoBehaviour {
 		{
 			alphaFade += fadeDir * fadeSpeed * Time.deltaTime;
 
-			if(alphaFade>1f && fadeDir == 1f)
+			if(alphaFade>1f && fadeDir == 1f && isRestarting==false)
 			{
+				isRestarting = true;
 				StartCoroutine(GoRestart());
 			}
 		}
