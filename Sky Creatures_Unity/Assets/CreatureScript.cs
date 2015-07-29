@@ -32,19 +32,6 @@ public class CreatureScript : MonoBehaviour {
 		myMatBase = Resources.Load("MatSprite"+myLayer.ToString(), typeof(Material)) as Material;
 
 		myCoordinate = new Vector2(Random.value,Random.value);
-
-			
-		while(MainScript.Instance.GetMinDistanceInLoop(myCoordinate,new Vector2(MainScript.Instance.listLayers[myLayer].GetValueX(),MainScript.Instance.listLayers[myLayer].GetValueY()))<0.3f)
-		{
-			myCoordinate = new Vector2(Random.value,Random.value);
-		}
-			
-
-
-
-
-
-
 	}
 
 	void Start () {

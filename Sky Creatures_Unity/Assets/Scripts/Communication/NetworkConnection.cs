@@ -13,8 +13,10 @@ public abstract class NetworkConnection : MonoBehaviourBase
     [SerializeField] private Text debugText;
     [SerializeField] private int debugTextLineCount = 14;
 
-    public abstract void SendResetCreatures();
+    public abstract void SendSpawnCreatures(int[] seeds);
+    public abstract void SendCreaturesFlyAway();
     public abstract void SendCreatureCaught(int seed);
+    public abstract void SendRemoveCreatures();
 
     protected bool IsNest { get { return Application.isMobilePlatform || simulateMobile; } }
     protected bool IsGame { get { return !IsNest; } }
