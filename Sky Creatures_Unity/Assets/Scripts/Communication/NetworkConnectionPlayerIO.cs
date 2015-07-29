@@ -26,6 +26,8 @@ public class NetworkConnectionPlayerIO : NetworkConnection
     private bool joinedRoom;
     private bool connecting;
 
+    private List<Message> queuedMessages = new List<Message>(); 
+
     private void Start()
     {
         errorRetryCountdown = new Countdown(5f);
@@ -129,6 +131,12 @@ public class NetworkConnectionPlayerIO : NetworkConnection
         Connection.OnMessage += OnPlayerIOMessage;
         Connection.OnDisconnect += OnDisconnect;
         joinedRoom = true;
+
+        foreach (var message in queuedMessages)
+        {
+            Connection.Send(message);
+        }
+        queuedMessages.Clear();
     }
 
     private void OnErrorJoiningRoom(PlayerIOError error)
@@ -189,7 +197,7 @@ public class NetworkConnectionPlayerIO : NetworkConnection
                 message.Add(seed);
             }
 
-            Connection.Send(message);
+            SendMessage(message);
         }
     }
 
@@ -197,7 +205,7 @@ public class NetworkConnectionPlayerIO : NetworkConnection
     {
         if (Connection != null)
         {
-            Connection.Send(TYPE_CREATURES_FLY_AWAY);
+            SendMessage(Message.Create(TYPE_CREATURES_FLY_AWAY));
         }
     }
 
@@ -205,7 +213,7 @@ public class NetworkConnectionPlayerIO : NetworkConnection
     {
         if (Connection != null)
         {
-            Connection.Send(TYPE_CREATURE_CAUGHT, seed);
+            SendMessage(Message.Create(TYPE_CREATURE_CAUGHT, seed));
         }
     }
 
@@ -213,7 +221,19 @@ public class NetworkConnectionPlayerIO : NetworkConnection
     {
         if (Connection != null)
         {
-            Connection.Send(TYPE_REMOVE_CREATURES);
+            SendMessage(Message.Create(TYPE_REMOVE_CREATURES));
+        }
+    }
+
+    private void SendMessage(Message message)
+    {
+        if (joinedRoom)
+        {
+            Connection.Send(message);
+        }
+        else
+        {
+            queuedMessages.Add(message);
         }
     }
 
