@@ -14,12 +14,12 @@ public class OSCPureDataConnection : SingletonMonoBehaviour<OSCPureDataConnectio
     [SerializeField] private int clientTargetPort = 9001;
     [SerializeField] private int clientTargetPort2 = 9002;
 
-    private void Awake()
-    {
-        OSCHandler.Instance.CreateClient(ClientName, IPAddress.Parse(clientTargetAddress), clientTargetPort);
-        OSCHandler.Instance.CreateClient(ClientName2, IPAddress.Parse(clientTargetAddress), clientTargetPort2);
-    }
-
+	private void Awake()
+	{
+		OSCHandler.Instance.CreateClient(ClientName, IPAddress.Parse(clientTargetAddress), clientTargetPort);
+		OSCHandler.Instance.CreateClient(ClientName2, IPAddress.Parse(clientTargetAddress), clientTargetPort2);
+	}
+   
     public void SendDirections(float up, float down, float left, float right)
     {
         Send("up", up);
@@ -33,9 +33,12 @@ public class OSCPureDataConnection : SingletonMonoBehaviour<OSCPureDataConnectio
         Send("layer", layer);
     }
 
-    public void SendCreatureCatch()
+    public void SendCreatureCatch(bool success)
     {
-        Send("creaturecatch", 1);
+        if(success)
+			Send("creaturecatch", 1);
+		else
+			Send("creaturecatchno", 1);
     }
 
     public void SendCreatureProximity(float proximity)

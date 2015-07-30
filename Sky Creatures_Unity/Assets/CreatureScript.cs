@@ -70,32 +70,31 @@ public class CreatureScript : MonoBehaviour {
 	void Apparition()
 	{
 
-
-		if(caugth==false)
-		{
-			if(myLayer==main.frontIndex)
+			if(main.conclusion)
 			{
-				progressCatch+=Time.deltaTime;
-
-
+				progressCatch-=Time.deltaTime*2f;
 			}
 			else
 			{
-				progressCatch-=Time.deltaTime;
+				if(myLayer==main.frontIndex)
+				{
+					progressCatch+=Time.deltaTime;
+					
+					
+				}
+				else
+				{
+					progressCatch-=Time.deltaTime;
+				}
 			}
+
+			
 
 			progressCatch=Mathf.Clamp01(progressCatch);
 			SetAlpha (progressCatch);
 
 
 
-
-
-
-
-
-
-		}
 
 
 

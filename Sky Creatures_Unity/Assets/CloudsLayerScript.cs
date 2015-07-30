@@ -5,7 +5,7 @@ public class CloudsLayerScript : MonoBehaviour {
 
 	// Use this for initialization
 
-	Material myMat;
+	public Material myMat;
 
 	public Vector2 minMaxCloud;
 	public AnimationCurve curveVanish;
