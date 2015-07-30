@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Collections;
 using UnityOSC;
 
-public class OSCPureDataConnection : PersistentSingletonMonoBehaviour<OSCPureDataConnection>
+public class OSCPureDataConnection : SingletonMonoBehaviour<OSCPureDataConnection>
 {
     private const string ClientName = "PD-out";
     private const string ClientName2 = "PD-out2";
@@ -14,9 +14,8 @@ public class OSCPureDataConnection : PersistentSingletonMonoBehaviour<OSCPureDat
     [SerializeField] private int clientTargetPort = 9001;
     [SerializeField] private int clientTargetPort2 = 9002;
 
-	protected override void OnFirstLoad ()
+	private void Awake()
 	{
-		base.OnFirstLoad ();
 		OSCHandler.Instance.CreateClient(ClientName, IPAddress.Parse(clientTargetAddress), clientTargetPort);
 		OSCHandler.Instance.CreateClient(ClientName2, IPAddress.Parse(clientTargetAddress), clientTargetPort2);
 	}

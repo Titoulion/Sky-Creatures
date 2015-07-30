@@ -61,7 +61,7 @@ public class MainScript : MonoBehaviour {
 
 	public bool useArduino=false;
 
-	public AnimationCurve curveCreatureFeedback;
+
 
 	bool tryingToCatch = false;
 	float progressCatch = 0f;
@@ -97,7 +97,23 @@ public class MainScript : MonoBehaviour {
 
 	public bool dontplaysound = false;
 
+	public float maxTime = 120f;
+	float timeLeft = 120f;
 
+
+
+	public float progressTimer = 0f;
+
+
+	public GameObject prefabTimerCircle;
+	TimeCircleScript[] timerCircles;
+
+	public bool conclusion = false;
+	float progressConclusion = 0f;
+	bool laFin = false;
+	bool playSonFin = true;
+
+	public AnimationCurve curveCloseCloud;
 
 	void Awake()
 	{
@@ -109,7 +125,11 @@ public class MainScript : MonoBehaviour {
 	{
 		//CreatureCreator.Instance.
 
+		GenerateTimerCircles();
 
+
+
+		timeLeft = maxTime;
 
 
 		inputArduino = ArduinoInput.Instance;
@@ -121,6 +141,24 @@ public class MainScript : MonoBehaviour {
 
 		//PlaceLayers(frontIndex);
 	}
+
+	void GenerateTimerCircles()
+	{
+		timerCircles = new TimeCircleScript[120];
+
+		for(int i = 0; i<120; i++)
+		{
+			Vector3 pos = -Vector3.forward*2f;
+			float progressStuff = (float)i/120f;
+
+			pos.x+=Mathf.Cos(progressStuff*Mathf.PI*2f+Mathf.PI*0.5f)*47f;
+			pos.y+=Mathf.Sin(progressStuff*Mathf.PI*2f+Mathf.PI*0.5f)*47f;
+			GameObject timeCircle = Instantiate (prefabTimerCircle,pos,Quaternion.identity) as GameObject;
+			timerCircles[i] = timeCircle.GetComponent<TimeCircleScript>();
+			timerCircles[i].myRank = (float)i/120f;
+		}
+	}
+
 
 	void InstantiateCreature()
 	{
@@ -145,6 +183,8 @@ public class MainScript : MonoBehaviour {
 			listLayers[i].SetMyCreature(newCreature);
 
 			seeds[i] = newMob.Seed;
+
+			newCreature.myMatBase.SetFloat ("_ProgressApparition",0f);
 
 
 
@@ -206,7 +246,66 @@ public class MainScript : MonoBehaviour {
 
 
 
+		if(gameStarted)
+		{
+			GestionTimer();
+		}
+
+		if(conclusion)
+		{
+			progressConclusion+=Time.deltaTime/3f;
+
+
+
+			
+			float valueRayon = curveCloseCloud.Evaluate(progressConclusion);
+			listLayers[0].myMat.SetFloat ("_ProgressCloseClouds",valueRayon);
+			listLayers[1].myMat.SetFloat ("_ProgressCloseClouds",valueRayon);
+			listLayers[2].myMat.SetFloat ("_ProgressCloseClouds",valueRayon);
+
+			if(progressConclusion>=1f && laFin==false)
+			{
+				laFin=true;
+				//network.SendRemoveCreatures();
+				fadeOut ();
+
+
+			}
+		}
+
+
+
+
 	}
+
+	void GestionTimer()
+	{
+
+		if(tryingToCatch==false && catching==false&& reorganising==false && conclusion == false && fadeDir !=1f && endGame==false)
+		timeLeft-=Time.deltaTime*1f;
+
+
+
+
+
+		progressTimer=Mathf.Clamp(1f-timeLeft/maxTime,0f,1f+1f/120f);
+
+		if(progressTimer==1f+1f/120f && playSonFin)
+		{
+			conclusion=true;
+			playSonFin=false;
+			OSCStuff.SendEndGame();
+
+		}
+
+
+
+
+
+	}
+
+
+
 
 	void GestionSound()
 	{
@@ -293,11 +392,11 @@ public class MainScript : MonoBehaviour {
 
 
 
-		float transitionColorSpeed = (value4-value3)*0.05f;
+		float transitionColorSpeed = (value4-value3)*0.03f;
 		listLayers[frontIndex].SetTransitionColor(transitionColorSpeed);
 
 
-		float sensDistort = (value6-value5)*0.04f;
+		float sensDistort = (value6-value5)*0.018f;
 		listLayers[frontIndex].SetValueDistort(sensDistort);
 
 
@@ -315,7 +414,7 @@ public class MainScript : MonoBehaviour {
 				Vector2 pointA = new Vector2(listLayers[i].GetValueX(),listLayers[i].GetValueY());
 
 				float distance = GetMinDistanceInLoop(pointA,pointB);
-
+			Debug.Log (distance);
 				
 				float feedbackValue = (distance>distanceCreatureMax ?0f:1f-(distance/distanceCreatureMax ));
 
@@ -453,6 +552,7 @@ public class MainScript : MonoBehaviour {
 						if(frontIndex+1==listLayers.Length)
 						{
 							StartCoroutine(GoFadeOut());
+							OSCStuff.SendEndGame();
 							endGame=true;
 						}
 						else
@@ -562,7 +662,7 @@ public class MainScript : MonoBehaviour {
 
 	public bool CanChangeValues()
 	{
-		return(tryingToCatch==false && catching == false && reorganising == false && gameStarted && endGame==false);
+		return(tryingToCatch==false && catching == false && reorganising == false && gameStarted && endGame==false && conclusion==false);
 	}
 
 	public void GoNextLayer()
@@ -721,6 +821,9 @@ public class MainScript : MonoBehaviour {
 				}
 			}
 		}
+
+
+		float normalizedDistance = distanceMin/(0.5f*Mathf.Sqrt(2f));
 
 		return(distanceMin);
 
