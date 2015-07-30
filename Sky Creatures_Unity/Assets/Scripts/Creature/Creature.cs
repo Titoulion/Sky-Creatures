@@ -6,13 +6,13 @@ using UnityEngine;
 
 public class Creature : MonoBehaviourBase
 {
-    [SerializeField] private int pureDataCreatureIndex;
-
     private CreatureCreator creatureCreator;
     private Dictionary<CreaturePartType, CreaturePart> queuedCreatureParts;
     public int Seed { get; set; }
 
-    public int PureDataCreatureIndex { get { return pureDataCreatureIndex; } }
+    public int PureDataCreatureIndex { get { return (int) head.Type; } }
+
+    private CreatureHead head;
 
     private void Awake()
     {
@@ -28,6 +28,8 @@ public class Creature : MonoBehaviourBase
         {
             part.FillSlots(this);
         }
+
+        head = GetComponentInChildren<CreatureHead>();
 
         queuedCreatureParts = null;
     }
