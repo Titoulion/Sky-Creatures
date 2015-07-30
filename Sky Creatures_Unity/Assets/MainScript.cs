@@ -237,6 +237,7 @@ public class MainScript : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.R))
 		{
 			dontplaysound=true;
+			network.SendRemoveCreatures();
 			Application.LoadLevel("MainScene");
 		}
 	
@@ -675,6 +676,7 @@ public class MainScript : MonoBehaviour {
 		network.SendCreaturesFlyAway();
 		yield return new WaitForSeconds(2f);
 		gameStarted = true;
+		OSCStuff.SendLayer(0);
 		introduction = false;
 	}
 
